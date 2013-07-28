@@ -20,49 +20,49 @@
 
     流程通过`.xml`格式定义，下面是一个简单的例子
 
-        ```xml
-        <!-- 流程总是由一个process标签定义，内部嵌套复数的节点元素来描述流程的流转 -->
-        <process name="process">
-            <!-- 流程节点:start 在默认Parser实现中会被解析为第一个节点 -->
-            <start name="i'm start">
-                <paths>
-                    <path to="state1"/>
-                </paths>
-            </start>
-            <!-- 流程节点:state 最普通的节点，可以执行el脚本 -->
-            <state name="state1">
-                <paths>
-                    <path to="state2" expr="goto==2"/>
-                    <path to="state3" expr="goto==3"/>
-                </paths>
-            </state>
-            <state name="state2">
-                <invokes>
-                    <!-- 脚本执行的支持，通过pojo和springBean都可以 -->
-                    <script return="a" pojos="test.TestBean -> test, test.TestBean2 -> test2">
-                        test2.testMethod(test.testMethod(i))
-                    </script>
-                    <!-- 可以通过expr表达式来判断是否执行这段script -->
-                    <script return="a" pojos="test.TestBean -> test, test.TestBean2 -> test2" expr="test2.judge()">
-                        test2.testMethod(test.testMethod(2))
-                    </script>
-                    <!-- async属性使script异步执行，默认为false，在异步下return属性是无效的 -->
-                    <script pojos="test.TestBean -> test, test.TestBean2 -> test2" async="true">
-                        test2.testMethod(test.testMethod(2))
-                    </script>
-                </invokes>
-                <paths>
-                    <path to="end"/>
-                </paths>
-            </state>
-            <state name="state3">
-                <paths>
-                    <path to="end"/>
-                </paths>
-            </state>
-            <state name="end"/>
-        </process>
-        ```
+    ```xml
+    <!-- 流程总是由一个process标签定义，内部嵌套复数的节点元素来描述流程的流转 -->
+    <process name="process">
+        <!-- 流程节点:start 在默认Parser实现中会被解析为第一个节点 -->
+        <start name="i'm start">
+            <paths>
+                <path to="state1"/>
+            </paths>
+        </start>
+        <!-- 流程节点:state 最普通的节点，可以执行el脚本 -->
+        <state name="state1">
+            <paths>
+                <path to="state2" expr="goto==2"/>
+                <path to="state3" expr="goto==3"/>
+            </paths>
+        </state>
+        <state name="state2">
+            <invokes>
+                <!-- 脚本执行的支持，通过pojo和springBean都可以 -->
+                <script return="a" pojos="test.TestBean -> test, test.TestBean2 -> test2">
+                    test2.testMethod(test.testMethod(i))
+                </script>
+                <!-- 可以通过expr表达式来判断是否执行这段script -->
+                <script return="a" pojos="test.TestBean -> test, test.TestBean2 -> test2" expr="test2.judge()">
+                    test2.testMethod(test.testMethod(2))
+                </script>
+                <!-- async属性使script异步执行，默认为false，在异步下return属性是无效的 -->
+                <script pojos="test.TestBean -> test, test.TestBean2 -> test2" async="true">
+                    test2.testMethod(test.testMethod(2))
+                </script>
+            </invokes>
+            <paths>
+                <path to="end"/>
+            </paths>
+        </state>
+        <state name="state3">
+            <paths>
+                <path to="end"/>
+            </paths>
+        </state>
+        <state name="end"/>
+    </process>
+    ```
 
     节点元素除了引擎内置的少量类型，也可以进行自定义和扩展
 
@@ -70,36 +70,36 @@
 
     在任何流程开始执行之前，你需要初始化整个引擎。视需要添加的扩展功能不同，需要初始化的动作可能会增加
 
-        ```java
-        import com.aixforce.bulbasaur.core.Bulbasaur
-        ...
-        Bulbasaur.require();
-        ```
+    ```java
+    import com.aixforce.bulbasaur.core.Bulbasaur
+    ...
+    Bulbasaur.require();
+    ```
 
     使用`Machine`创建和驱动流程
 
-        ```java
-        import com.aixforce.bulbasaur.core.Machine
-        ...
-        Machine m = Machine.apply("process");
-        // 放入执行需要的上下文
-        m.addContext("i", 1); // scala有更加scala的api来操作上下文
-        m.run();
-        // 获取执行后的上下文
-        m.context("i");
-        // 或者获取执行后的流程当前位置
-        m.getCurrentStateName(); // scala m.currentStateName
-        ```
+    ```java
+    import com.aixforce.bulbasaur.core.Machine
+    ...
+    Machine m = Machine.apply("process");
+    // 放入执行需要的上下文
+    m.addContext("i", 1); // scala有更加scala的api来操作上下文
+    m.run();
+    // 获取执行后的上下文
+    m.context("i");
+    // 或者获取执行后的流程当前位置
+    m.getCurrentStateName(); // scala m.currentStateName
+    ```
 
 ## 模块
 
 在应用初始化阶段使用'Bulbasaur.require()'初始化bulbasaur并加载需要的模块
 
-    ```java
-    Bulbasaur.require(); // 初始化bulbasaur 只加载默认的CoreModule
-    Bulbasaur.require(new ModuleDefine[] {PersistModule.module(), ...}); // 加载入参数组中的所有Module
-    // scala的api Bulbasaur.require(PersistModule, ...)
-    ```
+```java
+Bulbasaur.require(); // 初始化bulbasaur 只加载默认的CoreModule
+Bulbasaur.require(new ModuleDefine[] {PersistModule.module(), ...}); // 加载入参数组中的所有Module
+// scala的api Bulbasaur.require(PersistModule, ...)
+```
 
 **tips:**`Bulbasaur.require()`方法应该被调用且只被调用一次。即便不依赖任何模块也要调用，在空调用中`CoreModule`会被默认加载
 
@@ -107,13 +107,13 @@
 
 -   `bulbasaur-core`
 
-        ```xml
-        <dependency>
-            <groupId>com.aixforce.bulbasaur</groupId>
-            <artifactId>bulbasaur-core</artifactId>
-            <version>${bulbasaur.version}</version>
-        </dependency>
-        ```
+    ```xml
+    <dependency>
+        <groupId>com.aixforce.bulbasaur</groupId>
+        <artifactId>bulbasaur-core</artifactId>
+        <version>${bulbasaur.version}</version>
+    </dependency>
+    ```
 
     包含的module
 
@@ -136,13 +136,13 @@
 
 -   `bulbasaur-ext`
 
-        ```xml
-        <dependency>
-            <groupId>com.aixforce.bulbasaur</groupId>
-            <artifactId>bulbasaur-ext</artifactId>
-            <version>${bulbasaur.version}</version>
-        </dependency>
-        ```
+    ```xml
+    <dependency>
+        <groupId>com.aixforce.bulbasaur</groupId>
+        <artifactId>bulbasaur-ext</artifactId>
+        <version>${bulbasaur.version}</version>
+    </dependency>
+    ```
 
     包含的module
 
